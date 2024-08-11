@@ -1,0 +1,18 @@
+import xstd = libensketch-xstd%lib{ensketch-xstd}
+lib{luarepl}: {hxx cxx}{* -main -*.test...} $xstd
+{
+  cxx.export.libs = $xstd
+}
+
+libs =
+import libs += libreplxx%lib{replxx}
+import libs += sol2%lib{sol2}
+./: exe{luarepl}: cxx{main} lib{luarepl} $libs
+
+import doctest = doctest%lib{doctest-main}
+./: exe{tests}: {hxx cxx}{*.test...} lib{luarepl} $doctest
+{
+  test = true
+}
+
+cxx.poptions =+ "-I$out_root" "-I$src_root"

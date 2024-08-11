@@ -1,0 +1,17 @@
+: 1
+name: luarepl
+version: 0.1.0-a.0.z
+language: c++
+summary: luarepl C++ executable
+license: GPL-3.0-or-later ; GNU General Public License v3.0 or later.
+description-file: README.md
+url: https://example.org/luarepl
+email: lyrahgames@mailbox.org
+#build-error-email: lyrahgames@mailbox.org
+depends: * build2 >= 0.16.0
+depends: * bpkg >= 0.16.0
+
+depends: doctest ^2.4.11
+depends: libreplxx
+depends: sol2
+depends: libensketch-xstd
