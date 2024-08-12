@@ -216,32 +216,23 @@ struct comment_entry {
 
 struct context {
   context() noexcept = default;
-  context(string_view text) : src{text} {}
 
   constexpr bool valid() const noexcept { return errors.empty(); }
-  constexpr bool done() const noexcept { return *it == '\0'; }
-
-  constexpr auto source() const noexcept -> string_view { return src; }
-
-  constexpr auto current() const noexcept -> iterator { return it; }
-  constexpr void advance(const iterator& pos) noexcept { it = pos; }
 
   constexpr void error(auto&& err) {
     errors.emplace_back(forward<decltype(err)>(err));
   };
-
-  string src{};
-  iterator it{src.c_str()};
 
   vector<token> tokens{};
   vector<comment_entry> comments{};
   vector<error_entry> errors{};
 };
 
-auto scan(string_view text) -> context;
-
-bool scan_comment(context& ctx, iterator& it);
-bool scan_long_comment(context& ctx);
-bool scan_line_comment(context& ctx);
+auto scan(czstring text) -> context;
+bool scan_for_comment(iterator& it, context& ctx);
+bool scan_for_identifier_or_keyword(iterator& next, context& ctx);
+bool scan_for_other_tokens(iterator& next, context& ctx);
+bool scan_for_string(iterator& next, context& ctx);
+bool scan_for_numeral(iterator& next, context& ctx);
 
 }  // namespace luarepl::lexer

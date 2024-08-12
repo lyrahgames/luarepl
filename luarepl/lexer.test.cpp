@@ -15,7 +15,7 @@ SCENARIO("") {
 _globalVar = 10
 --[=[
 This is a longer comment.
-]]
+]=]
 for x =1,10 do
   local y = x * x -- Let us square the value.
   print("y = " .. y);

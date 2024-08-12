@@ -27,29 +27,26 @@ struct terminal : token_type_base {
   }
 };
 
-using keywords = static_zstring_list<  //
-    "and",
-    "break",
-    "do",
-    "else",
-    "elseif",
-    "end",
-    "false",
-    "for",
-    "function",
-    "goto",
-    "if",
-    "in",
-    "local",
-    "nil",
-    "not",
-    "or",
-    "repeat",
-    "return",
-    "then",
-    "true",
-    "until",
-    "while">;
+using value_keywords = static_zstring_list<"false", "nil", "true">;
+using operator_keywords = static_zstring_list<"and", "not", "or">;
+using control_keywords = static_zstring_list<"break",
+                                             "do",
+                                             "else",
+                                             "elseif",
+                                             "end",
+                                             "for",
+                                             "function",
+                                             "goto",
+                                             "if",
+                                             "in",
+                                             "local",
+                                             "repeat",
+                                             "return",
+                                             "then",
+                                             "until",
+                                             "while">;
+using keywords =
+    decltype(value_keywords{} + operator_keywords{} + control_keywords{});
 
 using operators_and_punctuation = static_zstring_list<  //
     "+",
@@ -85,6 +82,43 @@ using operators_and_punctuation = static_zstring_list<  //
     ".",
     "..",
     "...">;
+
+namespace detail {
+template <typename type>
+struct is_control_keyword : std::false_type {};
+template <static_zstring str>
+struct is_control_keyword<terminal<str>> {
+  static constexpr bool value = contains<str>(control_keywords{});
+};
+template <typename type>
+struct is_operator_keyword : std::false_type {};
+template <static_zstring str>
+struct is_operator_keyword<terminal<str>> {
+  static constexpr bool value = contains<str>(operator_keywords{});
+};
+template <typename type>
+struct is_value_keyword : std::false_type {};
+template <static_zstring str>
+struct is_value_keyword<terminal<str>> {
+  static constexpr bool value = contains<str>(value_keywords{});
+};
+template <typename type>
+struct is_operator_or_punctuation : std::false_type {};
+template <static_zstring str>
+struct is_operator_or_punctuation<terminal<str>> {
+  static constexpr bool value = contains<str>(operators_and_punctuation{});
+};
+}  // namespace detail
+
+template <typename type>
+concept control_keyword = detail::is_control_keyword<type>::value;
+template <typename type>
+concept operator_keyword = detail::is_operator_keyword<type>::value;
+template <typename type>
+concept value_keyword = detail::is_value_keyword<type>::value;
+template <typename type>
+concept operator_or_punctuation =
+    detail::is_operator_or_punctuation<type>::value;
 
 // Use transform of `value_list` to `type_list` with predicate.
 template <static_zstring... str>
